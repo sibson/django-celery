@@ -38,6 +38,7 @@ class ModelEntry(ScheduleEntry):
     model_schedules = ((schedules.crontab, CrontabSchedule, 'crontab'),
                        (schedules.schedule, IntervalSchedule, 'interval'))
     save_fields = ['last_run_at', 'total_run_count', 'no_changes']
+    update_fields = ['last_run_at', 'total_run_count']
 
     def __init__(self, model):
         self.app = current_app._get_current_object()
@@ -99,7 +100,7 @@ class ModelEntry(ScheduleEntry):
         for field in self.save_fields:
             setattr(obj, field, getattr(self.model, field))
         obj.last_run_at = make_aware(obj.last_run_at)
-        obj.save()
+        obj.save(update_fields=self.update_fields)
 
     @classmethod
     def to_model_schedule(cls, schedule):
